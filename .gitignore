@@ -1,0 +1,7 @@
+# 忽略 Node modules 與系統檔案
+node_modules/
+.DS_Store
+
+# 忽略 IDE 設定與環境檔案
+.idea/
+.env
