@@ -109,6 +109,7 @@ async function handleUserQuery(text) {
 }
 
 app.post('/webhook', async (req, res) => {
+  console.log('✅ 收到 LINE Webhook 訊息');
   const events = req.body.events;
   try {
     const results = await Promise.all(events.map(async (event) => {
