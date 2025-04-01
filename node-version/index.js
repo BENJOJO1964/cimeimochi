@@ -4,7 +4,7 @@ require('dotenv').config({ path: './node-version/.env' });
 const { google } = require('googleapis');
 
 // ✅ 從 .env 中讀取 service account JSON 字串
-const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+const credentials = require('./service-account.json');
 const auth = new google.auth.GoogleAuth({
   credentials,
   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],

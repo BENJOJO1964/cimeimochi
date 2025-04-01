@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const { google } = require('googleapis');
 const dayjs = require('dayjs');
 const { Client } = require('@line/bot-sdk');
-require('dotenv').config();
+require('dotenv').config({ path: './node-version/.env' });
 
 // LINE 與 Google Sheets 設定
 const lineClient = new Client({
