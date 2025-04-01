@@ -1,5 +1,4 @@
 
-
 require('dotenv').config({ path: './node-version/.env' });
 
 const { google } = require('googleapis');
@@ -11,12 +10,12 @@ const sheets = google.sheets({ version: 'v4', auth });
 
 // 載入排程模組
 require('./scheduler_fixed.js');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Client } = require('@line/bot-sdk');
 const dayjs = require('dayjs');
 
-// 星期映射表：將 dayjs().day() 數字轉為中文星期
 const weekdayMapping = {
   0: '星期日',
   1: '星期一',
@@ -27,7 +26,7 @@ const weekdayMapping = {
   6: '星期六'
 };
 
-// 讀取環境變數設定
+// LINE Bot 設定
 const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -38,7 +37,7 @@ app.use(bodyParser.json());
 
 const lineClient = new Client(config);
 
-// Google Sheets API 設定
+// Google Sheets 設定
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 const DATA_RANGE = process.env.DATA_RANGE || 'Sheet1!A:C';
 
@@ -51,7 +50,6 @@ const flavorMapping = {
   '滷味香菇': '滷味香菇又是一種我們想推廣的口味，包上麻糬皮後可以品嚐一種口齒留香的嚼勁，你可能沒想像過，期待'
 };
 
-// 修改 getStallLocation：以星期作比對，並回傳「擺攤地點」和「時間」（若有填寫）
 async function getStallLocation(queryWeekday) {
   try {
     const response = await sheets.spreadsheets.values.get({
@@ -60,19 +58,12 @@ async function getStallLocation(queryWeekday) {
     });
     const rows = response.data.values;
     if (rows && rows.length) {
-      // 從第二列開始，假設第一列為標題
       for (let i = 1; i < rows.length; i++) {
-        // 以空白分割，只取第一部分（例如 "星期一"）
         let rowWeekday = rows[i][0].trim().split(' ')[0];
         if (rowWeekday === queryWeekday) {
           let location = rows[i][1] ? rows[i][1].trim() : '';
           let time = rows[i][2] ? rows[i][2].trim() : '';
-          // 如果有時間資料，結合起來
-          if (time !== '') {
-            return `${location}，時間：${time}`;
-          } else {
-            return location;
-          }
+          return time !== '' ? `${location}，時間：${time}` : location;
         }
       }
       return '查無擺攤資訊，請稍後再試。';
@@ -94,7 +85,6 @@ function getFlavorResponse(text) {
   return null;
 }
 
-// 修改 handleUserQuery：根據使用者訊息，利用星期映射回傳擺攤地點及時間
 async function handleUserQuery(text) {
   if (text.includes('擺攤')) {
     let targetWeekday;
@@ -136,6 +126,11 @@ app.post('/webhook', async (req, res) => {
     console.error('Webhook Error:', error);
     res.status(500).end();
   }
+});
+
+// ✅ 測試 Render 首頁 GET 路由
+app.get('/', (req, res) => {
+  res.send('次妹手工麻糬 BOT 上線成功 🍡');
 });
 
 const PORT = process.env.PORT || 3001;
