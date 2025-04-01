@@ -2,15 +2,16 @@
 require('dotenv').config({ path: './node-version/.env' });
 
 const { google } = require('googleapis');
+
+// ✅ 從 .env 中讀取 service account JSON 字串
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 const auth = new google.auth.GoogleAuth({
-  keyFile: './imposing-muse-423909-g8-e02c3c2edf82.json',
+  credentials,
   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
 });
 const sheets = google.sheets({ version: 'v4', auth });
 
-// 載入排程模組
 require('./scheduler_fixed.js');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Client } = require('@line/bot-sdk');
@@ -26,7 +27,6 @@ const weekdayMapping = {
   6: '星期六'
 };
 
-// LINE Bot 設定
 const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -37,7 +37,6 @@ app.use(bodyParser.json());
 
 const lineClient = new Client(config);
 
-// Google Sheets 設定
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 const DATA_RANGE = process.env.DATA_RANGE || 'Sheet1!A:C';
 
@@ -128,7 +127,7 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// ✅ 測試 Render 首頁 GET 路由
+// ✅ Render 預設首頁
 app.get('/', (req, res) => {
   res.send('次妹手工麻糬 BOT 上線成功 🍡');
 });
