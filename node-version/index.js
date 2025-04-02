@@ -1,6 +1,13 @@
 
 require('dotenv').config({ path: './node-version/.env' });
-
+try {
+  const rawJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  const parsed = JSON.parse(rawJson);
+  console.log("✅ 成功讀取 GOOGLE_SERVICE_ACCOUNT_JSON");
+  console.log("🔑 private_key 開頭預覽：", parsed.private_key.substring(0, 30));
+} catch (err) {
+  console.error("❌ GOOGLE_SERVICE_ACCOUNT_JSON 格式錯誤：", err);
+}
 const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
