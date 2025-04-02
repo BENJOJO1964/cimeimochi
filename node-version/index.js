@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 使用獨立 JSON 檔載入 service account
-const credentials = JSON.parse(fs.readFileSync(path.join(__dirname, 'service-account.json')));
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 const auth = new google.auth.GoogleAuth({
   credentials,
   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
